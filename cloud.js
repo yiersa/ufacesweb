@@ -17,7 +17,7 @@ var comment = AV.Object.extend('comment');
 AV.Cloud.define('getArticleList', function(request) {
     var query = new AV.Query('ArticleList');
     if(request.params.type === 'list') {//列表数据
-        query.select(['title', 'content', 'createdAt', 'commentCount', 'label']);
+        query.select(['title', 'content', 'createdAt', 'commentCount', 'label', 'nickName']);
     }
     query.equalTo('state', "1");
     return query.find().then(function(results) {
