@@ -151,9 +151,28 @@ AV.Cloud.define('addComment', function(request) {
         // 批量创建（更新）
         return AV.Object.saveAll(objects).then(function (objects) {
             // 成功
+            var commentData = {};
+            if(objects && objects.length > 0) {
+                for(var i = 0; i < objects.length; i++) {
+                    console.log(objects[i].get('type'))
+                    if(objects[i].get('type') === 'comment') {
+
+                        commentData = {
+                            "content": objects[i].get("content"),
+                            "userId": objects[i].get("userId"),
+                            "nickName": objects[i].get("nickName"),
+                            "avatarUrl": objects[i].get("avatarUrl"),
+                            "articleId": objects[i].get("articleId"),
+                            "objectId": objects[i].id,
+                            "createdAt": objects[i].createdAt,
+                            "updatedAt": objects[i].updatedAt
+                        };
+                    }
+                }
+            }
             var data = {
                 'errorCode': '0',
-                'data': objects
+                'data': commentData
             }
             return data;
         }, function (error) {
