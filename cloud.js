@@ -171,27 +171,112 @@ AV.Cloud.define('addComment', function(request) {
 });
 
 AV.Cloud.define('addArticle', function(request) {
-    var ArticleList = AV.Object.extend('ArticleList');
-    var article = new ArticleList();
+
     var articleData = request.params.article;
     var type = request.params.actionType;//'1'表示添加   '2'表示更新   '3'表示删除
-    if ((type === '1') && articleData) {
-        article.set('title', '我要15点起');
-        article.set('content', '明天我要下午3点起');
-        article.set('userId', '5a4b1311ee920a004f9246ca');
-        article.set('nickName', '桃小东');
-        article.set('avatarUrl', 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKic4Sia2vW3FdMJH947Q9Ik8g5TaibQxbgtubP9SwssgibLewftpM2M5sDEz91kCswtgCwP9fGyqCCQQ/0');
-        article.set('label', '百度');
 
-        article.set('origin', 'https://www.baidu.com/');
-        var actual = {
-            'content': '早上11点才起',
-            'url':'https://www.baidu.com/',
-            'time': new Date()
-        };
-        article.set('actual', actual);
+
+
+    if(!type) {
+        return error_data;
+    }
+    if(type === '3') {//删除
+        if(!articleData) {
+            return error_data;
+        }
+        if((!articleData.objectId)) {
+            return error_data;
+        }
+        var articleTemp = AV.Object.createWithoutData('ArticleList', articleData.objectId);
+        return articleTemp.destroy().then(function (success) {
+            console.log(success);
+            // 删除成功
+            var data = {
+                'errorCode':'0',
+                'data':success
+            }
+            return data;
+        }, function (error) {
+            // 删除失败
+            console.error('Failed to create new object, with error message: ' + error.message);
+            var data = {
+                'errorCode':error_1,
+                'message': error.message
+            }
+            return data;
+        });
+
+    } else if(type === '2') {//更新
+        if(!articleData) {
+            return error_data;
+        }
+        if((!articleData.actual) ||
+            (!articleData.objectId)) {
+            return error_data;
+        }
+        var articleTemp = AV.Object.createWithoutData('ArticleList', articleData.objectId);
+        articleTemp.set('actual', articleData.actual);
+        return articleTemp.save().then(function (item) {
+            console.log('New object created with objectId: ' + item.id);
+            var data = {
+                'errorCode':'0',
+                'data':item
+            }
+            return data;
+        }, function (error) {
+            console.error('Failed to create new object, with error message: ' + error.message);
+            var data = {
+                'errorCode':error_1,
+                'message': error.message
+            }
+            return data;
+        });
+    } else if(type === '1') {//添加
+        if(!articleData) {
+            return error_data;
+        }
+        if((!articleData.title) ||
+            (!articleData.content) ||
+            (!articleData.userId) ||
+            (!articleData.nickName) ||
+            (!articleData.avatarUrl) ||
+            (!articleData.label) ||
+            (!articleData.origin)) {
+            return error_data;
+        }
+        var ArticleList = AV.Object.extend('ArticleList');
+        var article = new ArticleList();
+
+
+        article.set('title', articleData.title);
+        article.set('content', articleData.content);
+        article.set('userId', articleData.userId);
+        article.set('nickName', articleData.nickName);
+        article.set('avatarUrl', articleData.avatarUrl);
+        article.set('label', articleData.label);
+        article.set('origin', articleData.origin);
         article.set('state', '1');
-        article.set('commentCount', 3);
+        article.set('commentCount', 0);
+
+
+
+
+        // article.set('title', '我要15点起');
+        // article.set('content', '明天我要下午3点起');
+        // article.set('userId', '5a4b1311ee920a004f9246ca');
+        // article.set('nickName', '桃小东');
+        // article.set('avatarUrl', 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKic4Sia2vW3FdMJH947Q9Ik8g5TaibQxbgtubP9SwssgibLewftpM2M5sDEz91kCswtgCwP9fGyqCCQQ/0');
+        // article.set('label', '百度');
+        //
+        // article.set('origin', 'https://www.baidu.com/');
+        // var actual = {
+        //     'content': '早上11点才起',
+        //     'url':'https://www.baidu.com/',
+        //     'time': new Date()
+        // };
+        // article.set('actual', actual);
+
+
         return article.save().then(function (item) {
             console.log('New object created with objectId: ' + item.id);
             var data = {
@@ -208,10 +293,6 @@ AV.Cloud.define('addArticle', function(request) {
             return data;
         });
     } else {
-        var data = {
-            'errorCode':error_2,
-            'message': '参数错误'
-        }
-        return data;
+        return error_data;
     }
 });
