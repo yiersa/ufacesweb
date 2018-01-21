@@ -257,26 +257,6 @@ AV.Cloud.define('addArticle', function(request) {
         article.set('origin', articleData.origin);
         article.set('state', '1');
         article.set('commentCount', 0);
-
-
-
-
-        // article.set('title', '我要15点起');
-        // article.set('content', '明天我要下午3点起');
-        // article.set('userId', '5a4b1311ee920a004f9246ca');
-        // article.set('nickName', '桃小东');
-        // article.set('avatarUrl', 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKic4Sia2vW3FdMJH947Q9Ik8g5TaibQxbgtubP9SwssgibLewftpM2M5sDEz91kCswtgCwP9fGyqCCQQ/0');
-        // article.set('label', '百度');
-        //
-        // article.set('origin', 'https://www.baidu.com/');
-        // var actual = {
-        //     'content': '早上11点才起',
-        //     'url':'https://www.baidu.com/',
-        //     'time': new Date()
-        // };
-        // article.set('actual', actual);
-
-
         return article.save().then(function (item) {
             console.log('New object created with objectId: ' + item.id);
             var data = {
