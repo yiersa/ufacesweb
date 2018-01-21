@@ -4,6 +4,10 @@ var AV = require('leanengine');
  */
 const error_1 = '-1';//查询数据出错
 const error_2 = '-2';//参数错误
+const error_data = {
+    'errorCode':error_2,
+    'message': '参数错误'
+}
 /**
  * 一个简单的云代码方法
  */
@@ -11,8 +15,8 @@ AV.Cloud.define('hello', function(request) {
   return 'Hello world!';
 });
 
-var ArticleList = AV.Object.extend('ArticleList');
-var comment = AV.Object.extend('comment');
+
+
 
 AV.Cloud.define('getArticleList', function(request) {
     var query = new AV.Query('ArticleList');
@@ -55,26 +59,55 @@ AV.Cloud.define('getComment', function(request) {
             return data;
         });
     } else {
-        var data = {
-            'errorCode':error_2,
-            'message': '参数错误'
-        }
-        return data;
+
+        return error_data;
     }
 });
 AV.Cloud.define('addComment', function(request) {
-    var comment1 = new comment();
+
     var commentData = request.params.comment;
     var type = request.params.actionType;//'1'表示添加   '2'表示更新   '3'表示删除
-    if ((type === '1') && commentData) {
-        comment1.set('content', '哈哈哈哈了');
-        comment1.set('time', new Date());
-        comment1.set('userId', '5a4b1311ee920a004f9246ca');
-        comment1.set('nickName', '桃小东');
-        comment1.set('avatarUrl', 'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKic4Sia2vW3FdMJH947Q9Ik8g5TaibQxbgtubP9SwssgibLewftpM2M5sDEz91kCswtgCwP9fGyqCCQQ/0');
-        comment1.set('articleId', '5a5f6b180b616000426632fe');
-        comment1.set('state', '1');
-        return comment1.save().then(function (item) {
+
+    if(!type) {
+        return error_data;
+    }
+    if(type === '3') {//删除
+        if(!commentData) {
+            return error_data;
+        }
+        if((!commentData.objectId)) {
+            return error_data;
+        }
+        var commentTemp = AV.Object.createWithoutData('comment', commentData.objectId);
+        return commentTemp.destroy().then(function (success) {
+            console.log(success);
+            // 删除成功
+            var data = {
+                'errorCode':'0',
+                'data':success
+            }
+            return data;
+        }, function (error) {
+            // 删除失败
+            console.error('Failed to create new object, with error message: ' + error.message);
+            var data = {
+                'errorCode':error_1,
+                'message': error.message
+            }
+            return data;
+        });
+
+    } else if(type === '2') {//更新
+        if(!commentData) {
+            return error_data;
+        }
+        if((!commentData.content) ||
+            (!commentData.objectId)) {
+            return error_data;
+        }
+        var commentTemp = AV.Object.createWithoutData('comment', commentData.objectId);
+        commentTemp.set('content', commentData.content);
+        return commentTemp.save().then(function (item) {
             console.log('New object created with objectId: ' + item.id);
             var data = {
                 'errorCode':'0',
@@ -89,16 +122,56 @@ AV.Cloud.define('addComment', function(request) {
             }
             return data;
         });
-    } else {
-        var data = {
-            'errorCode':error_2,
-            'message': '参数错误'
+    } else if(type === '1') {//添加
+        if(!commentData) {
+            return error_data;
         }
-        return data;
+        if((!commentData.content) ||
+            (!commentData.userId) ||
+            (!commentData.nickName) ||
+            (!commentData.avatarUrl) ||
+            (!commentData.articleId)) {
+            return error_data;
+        }
+        var comment = AV.Object.extend('comment');
+        var comment1 = new comment();
+        var ArticleListTemp = AV.Object.createWithoutData('ArticleList', commentData.articleId);
+        ArticleListTemp.increment('commentCount', 1);
+        ArticleListTemp.fetchWhenSave(true);
+        comment1.set('content', commentData.content);
+        comment1.set('userId', commentData.userId);
+        comment1.set('nickName', commentData.nickName);
+        comment1.set('avatarUrl', commentData.avatarUrl);
+        comment1.set('articleId', commentData.articleId);
+        comment1.set('state', '1');
+        comment1.set('type', 'comment');
+
+        var objects = [ArticleListTemp,comment1]; // 构建一个本地的 AV.Object 对象数组
+
+        // 批量创建（更新）
+        return AV.Object.saveAll(objects).then(function (objects) {
+            // 成功
+            var data = {
+                'errorCode': '0',
+                'data': objects
+            }
+            return data;
+        }, function (error) {
+            // 异常处理
+            console.error('Failed to create new object, with error message: ' + error.message);
+            var data = {
+                'errorCode':error_1,
+                'message': error.message
+            }
+            return data;
+        });
+    } else {
+        return error_data;
     }
 });
 
 AV.Cloud.define('addArticle', function(request) {
+    var ArticleList = AV.Object.extend('ArticleList');
     var article = new ArticleList();
     var articleData = request.params.article;
     var type = request.params.actionType;//'1'表示添加   '2'表示更新   '3'表示删除
