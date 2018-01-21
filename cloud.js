@@ -156,7 +156,6 @@ AV.Cloud.define('addComment', function(request) {
                 for(var i = 0; i < objects.length; i++) {
                     console.log(objects[i].get('type'))
                     if(objects[i].get('type') === 'comment') {
-
                         commentData = {
                             "content": objects[i].get("content"),
                             "userId": objects[i].get("userId"),
@@ -278,9 +277,22 @@ AV.Cloud.define('addArticle', function(request) {
         article.set('commentCount', 0);
         return article.save().then(function (item) {
             console.log('New object created with objectId: ' + item.id);
+            var articleTemp = {
+                "title": item.get("title"),
+                "content": item.get("content"),
+                "userId": item.get("userId"),
+                "nickName": item.get("nickName"),
+                "avatarUrl": item.get("avatarUrl"),
+                "label": item.get("label"),
+                "origin": item.get("origin"),
+                "commentCount": 0,
+                "objectId": item.id,
+                "createdAt": item.createdAt,
+                "updatedAt": item.updatedAt
+            };
             var data = {
                 'errorCode':'0',
-                'data':item
+                'data':articleTemp
             }
             return data;
         }, function (error) {
