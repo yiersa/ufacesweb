@@ -17,13 +17,45 @@ AV.Cloud.define('hello', function(request) {
 
 
 
+AV.Cloud.define('getArticle', function(request) {
+    var query = new AV.Query('ArticleList');
+    query.select(['title', 'content', 'createdAt', 'commentCount', 'label', 'nickName','objectId','updatedAt','actual']);
+    query.equalTo('state', "1");
+    var id = request.params.id;
+    if(id) {
+        return query.get(id).then(function(result) {
+            var data = {
+                'errorCode':'0',
+                'data': result
+            }
+            return data;
+        }, function (error) {
+            console.error('Failed to create new object, with error message: ' + error.message);
+            var data = {
+                'errorCode':error_1,
+                'message': error.message
+            }
+            return data;
+        });
+    } else {
+        return error_data;
+    }
 
+});
 AV.Cloud.define('getArticleList', function(request) {
     var query = new AV.Query('ArticleList');
-    if(request.params.type === 'list') {//列表数据
-        query.select(['title', 'content', 'createdAt', 'commentCount', 'label', 'nickName']);
-    }
+    var page = request.params.page;
+    var limit = request.params.limit;
+    query.select(['title', 'content', 'createdAt', 'commentCount', 'label', 'nickName','objectId']);
     query.equalTo('state', "1");
+    if(page < 0) {
+        page = 0;
+    }
+    if(limit < 0) {
+        limit = 20;
+    }
+    query.limit(limit);// 最多返回 limit 条结果
+    query.skip(limit * page);// 跳过 limit*page 条结果
     return query.find().then(function(results) {
         var data = {
             'errorCode':'0',
