@@ -19,7 +19,7 @@ AV.Cloud.define('hello', function(request) {
 
 AV.Cloud.define('getArticle', function(request) {
     var query = new AV.Query('ArticleList');
-    query.select(['title', 'content', 'createdAt', 'commentCount', 'label', 'nickName','objectId','updatedAt','actual']);
+    query.select(['title', 'origin', 'content', 'createdAt', 'commentCount', 'label', 'nickName','objectId','updatedAt','actual']);
     query.equalTo('state', "1");
     var id = request.params.id;
     if(id) {
