@@ -56,6 +56,7 @@ AV.Cloud.define('getArticleList', function(request) {
     }
     query.limit(limit);// 最多返回 limit 条结果
     query.skip(limit * page);// 跳过 limit*page 条结果
+    query.descending('createdAt');// 按时间，降序排列
     return query.find().then(function(results) {
         var data = {
             'errorCode':'0',
