@@ -117,9 +117,10 @@ AV.Cloud.define('getCommentedArticleList', function(request) {
 });
 AV.Cloud.define('getComment', function(request) {
     var query = new AV.Query('comment');
-    query.equalTo('state', "1");
-    if(request.params.articleId) {
+    var articleId = request.params.articleId;
+    if(articleId) {
         query.equalTo('state', "1");
+        query.equalTo('articleId', articleId);
         return query.find().then(function(results) {
             var data = {
                 'errorCode':'0',
