@@ -72,6 +72,29 @@ AV.Cloud.define('getArticleList', function(request) {
         return data;
     });
 });
+//我发布的
+AV.Cloud.define('getMineArticleList', function(request) {
+    var query = new AV.Query('ArticleList');
+    var userId = request.params.userId;
+    query.select(['title', 'content', 'createdAt', 'commentCount', 'label', 'nickName','objectId']);
+    query.equalTo('state', "1");
+    query.equalTo('userId', userId);
+    query.descending('createdAt');// 按时间，降序排列
+    return query.find().then(function(results) {
+        var data = {
+            'errorCode':'0',
+            'data': results
+        }
+        return data;
+    }, function (error) {
+        console.error('Failed to create new object, with error message: ' + error.message);
+        var data = {
+            'errorCode':error_1,
+            'message': error.message
+        }
+        return data;
+    });
+});
 AV.Cloud.define('getComment', function(request) {
     var query = new AV.Query('comment');
     query.equalTo('state', "1");
