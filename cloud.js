@@ -95,6 +95,26 @@ AV.Cloud.define('getMineArticleList', function(request) {
         return data;
     });
 });
+//我评论的
+AV.Cloud.define('getCommentedArticleList', function(request) {
+    var userId = request.params.userId;
+    var cql = 'SELECT title,content,createdAt,commentCount,label,nickName,objectId FROM ArticleList WHERE objectId in(SELECT articleId FROM comment WHERE userId=?) ORDER BY createdAt desc';
+    var pvalues = [userId];
+    return AV.Query.doCloudQuery(cql,pvalues).then(function(results) {
+        var data = {
+            'errorCode':'0',
+            'data': results
+        }
+        return data;
+    }, function (error) {
+        console.error('Failed to create new object, with error message: ' + error.message);
+        var data = {
+            'errorCode':error_1,
+            'message': error.message
+        }
+        return data;
+    });
+});
 AV.Cloud.define('getComment', function(request) {
     var query = new AV.Query('comment');
     query.equalTo('state', "1");
