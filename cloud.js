@@ -101,9 +101,13 @@ AV.Cloud.define('getCommentedArticleList', function(request) {
     var cql = 'SELECT title,content,createdAt,commentCount,label,nickName,objectId FROM ArticleList WHERE objectId in(SELECT articleId FROM comment WHERE userId=?) ORDER BY createdAt desc';
     var pvalues = [userId];
     return AV.Query.doCloudQuery(cql,pvalues).then(function(results) {
+        var datasTemp = [];
+        if (results && results.results) {
+            datasTemp = results.results;
+        }
         var data = {
             'errorCode':'0',
-            'data': results
+            'data': datasTemp
         }
         return data;
     }, function (error) {
