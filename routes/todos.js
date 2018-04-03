@@ -6,10 +6,6 @@ var Todo = AV.Object.extend('Todo');
 
 // 查询 Todo 列表
 router.get('/', function(req, res, next) {
-
-
-
-
   var query = new AV.Query(Todo);
   query.descending('createdAt');
   query.find().then(function(results) {
