@@ -31,23 +31,29 @@
 
 
 <div class="container">
-  <div class="input-group" style="margin-top: 20px;">
-    <span class="input-group-addon" id="basic-addon1">标签</span>
-    <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
-  </div>
-  <div class="input-group" style="margin-top: 20px;">
-    <span class="input-group-addon" id="basic-addon1">网址来源</span>
-    <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
-  </div>
-  <div class="input-group" style="margin-top: 20px;">
-    <span class="input-group-addon" id="basic-addon1">文章标题</span>
-    <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
-  </div>
-  <div class="form-group" style="margin-top: 20px;">
-    <label for="name">内容</label>
-    <textarea class="form-control" rows="10"></textarea>
-  </div>
-  <button type="button" class="btn btn-primary" style="margin-top: 20px;">提交</button>
+
+
+
+  <form class="form-signin" action="/todos" method="POST">
+    <div class="input-group" style="margin-top: 20px;">
+      <span class="input-group-addon" id="basic-addon1">标签</span>
+      <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1" name="label">
+    </div>
+    <div class="input-group" style="margin-top: 20px;">
+      <span class="input-group-addon" id="basic-addon1">网址来源</span>
+      <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1" name="origin">
+    </div>
+    <div class="input-group" style="margin-top: 20px;">
+      <span class="input-group-addon" id="basic-addon1">文章标题</span>
+      <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1" name="title">
+    </div>
+    <div class="form-group" style="margin-top: 20px;">
+      <label for="name">内容</label>
+      <textarea class="form-control" rows="10" name="content"></textarea>
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">提交</button>
+  </form>
+
 
 </div>
 
