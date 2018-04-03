@@ -357,7 +357,6 @@ AV.Cloud.define('addArticle', function(request) {
         article.set('state', '1');
         article.set('commentCount', 0);
         return article.save().then(function (item) {
-            console.log('New object created with objectId: ' + item.id);
             var articleTemp = {
                 "title": item.get("title"),
                 "content": item.get("content"),
